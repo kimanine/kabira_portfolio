@@ -1,0 +1,27 @@
+AddDefaultCharset utf-8
+
+# Interdire l'accès au fichier .htaccess
+<Files .htaccess>
+  order allow,deny
+  deny from all
+</Files>
+
+# Interdiction de fouiller dans les dossiers...
+Options All -Indexes
+
+# Redirection de http vers https:
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+# Rediriger les pages .php vers une URL sans extension
+RewriteCond %{THE_REQUEST} ^(.+)\.php([#?][^\ ]*)?\ HTTP/
+RewriteRule ^(.+)\.php$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+# Supprimer l'extension .php et renommer les pages
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME}.php -f
+RewriteRule ^(.+?)/?$ $1.php [L]
+
+# Réécrire les liens des articles
+RewriteRule ^news/([^/]+)$ article-details.php?slug=$1 [L]
